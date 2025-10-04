@@ -34,7 +34,7 @@ const AQIDashboard = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold mb-2">Current Air Quality</h2>
-          <p className="text-muted-foreground">Real-time data from {location}</p>
+          <p className="text-muted-foreground">Real-time data from New York City</p>
         </div>
 
         {/* Main AQI Display */}

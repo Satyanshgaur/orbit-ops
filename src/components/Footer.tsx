@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   return (
-    <footer id="about" className="bg-nasa-dark text-white">
+    <footer id="about" className="bg-nasa-dark text-black">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About NASA TEMPO */}
@@ -12,7 +12,7 @@ const Footer = () => {
               <Satellite className="h-6 w-6 text-nasa-blue" />
               <h3 className="text-lg font-semibold">NASA TEMPO</h3>
             </div>
-            <p className="text-sm text-gray-300 leading-relaxed">
+            <p className="text-sm text-black leading-relaxed">
               The Tropospheric Emissions: Monitoring of Pollution (TEMPO) instrument provides 
               hourly daytime observations of air quality across North America from geostationary orbit.
             </p>
@@ -25,21 +25,21 @@ const Footer = () => {
           {/* Mission Info */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Mission</h3>
-            <div className="space-y-3 text-sm text-gray-300">
+            <div className="space-y-3 text-sm text-black">
               <div>
-                <h4 className="font-medium text-white">Launch:</h4>
+                <h4 className="font-medium">Launch:</h4>
                 <p>April 7, 2023</p>
               </div>
               <div>
-                <h4 className="font-medium text-white">Coverage:</h4>
+                <h4 className="font-medium">Coverage:</h4>
                 <p>North America (Mexico to Canada)</p>
               </div>
               <div>
-                <h4 className="font-medium text-white">Resolution:</h4>
+                <h4 className="font-medium">Resolution:</h4>
                 <p>Hourly daytime observations</p>
               </div>
               <div>
-                <h4 className="font-medium text-white">Key Pollutants:</h4>
+                <h4 className="font-medium">Key Pollutants:</h4>
                 <p>NO₂, O₃, SO₂, HCHO, Aerosols</p>
               </div>
             </div>
@@ -48,7 +48,7 @@ const Footer = () => {
           {/* Data Sources */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Data Sources</h3>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm text-black">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-nasa-blue rounded-full" />
                 <span>NASA TEMPO Satellite</span>
@@ -66,7 +66,7 @@ const Footer = () => {
                 <span>State/Local Air Quality Networks</span>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-3">
+            <p className="text-xs text-black mt-3">
               Data fusion algorithms combine multiple sources for enhanced accuracy and coverage.
             </p>
           </div>
@@ -75,19 +75,19 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Resources</h3>
             <div className="space-y-2">
-              <a href="#" className="flex items-center space-x-2 text-sm text-gray-300 hover:text-nasa-blue transition-colors">
+              <a href="#" className="flex items-center space-x-2 text-sm text-black hover:text-nasa-blue transition-colors">
                 <Globe className="h-4 w-4" />
                 <span>NASA Earth Science</span>
               </a>
-              <a href="#" className="flex items-center space-x-2 text-sm text-gray-300 hover:text-nasa-blue transition-colors">
+              <a href="#" className="flex items-center space-x-2 text-sm text-black hover:text-nasa-blue transition-colors">
                 <Mail className="h-4 w-4" />
                 <span>Contact Support</span>
               </a>
-              <a href="#" className="flex items-center space-x-2 text-sm text-gray-300 hover:text-nasa-blue transition-colors">
+              <a href="#" className="flex items-center space-x-2 text-sm text-black hover:text-nasa-blue transition-colors">
                 <ExternalLink className="h-4 w-4" />
                 <span>API Documentation</span>
               </a>
-              <a href="#" className="flex items-center space-x-2 text-sm text-gray-300 hover:text-nasa-blue transition-colors">
+              <a href="#" className="flex items-center space-x-2 text-sm text-black hover:text-nasa-blue transition-colors">
                 <ExternalLink className="h-4 w-4" />
                 <span>Terms of Use</span>
               </a>
@@ -103,12 +103,12 @@ const Footer = () => {
               <Satellite className="h-5 w-5 text-nasa-blue" />
               <span className="font-semibold">CleanAir Forecast</span>
             </div>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-black">
               Powered by NASA TEMPO Mission
             </span>
           </div>
           
-          <div className="flex items-center space-y-2 md:space-y-0 md:space-x-6 text-xs text-gray-400 flex-col md:flex-row">
+          <div className="flex items-center space-y-2 md:space-y-0 md:space-x-6 text-xs text-black flex-col md:flex-row">
             <span>© 2024 NASA Earth Science Division</span>
             <span className="hidden md:inline">•</span>
             <span>Data updated every hour</span>

@@ -1,10 +1,12 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, Sector } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, TrendingUp } from "lucide-react";
+import { Calendar, Clock, TrendingUp, Wind, AlertTriangle, CheckCircle, Info } from "lucide-react";
+import { useState } from "react";
 
 const ForecastChart = () => {
-  // Mock forecast data for the next 48 hours
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
   const forecastData = [
     { time: "00:00", aqi: 82, pm25: 24.1, o3: 65, no2: 38, temp: 22, humidity: 68 },
     { time: "03:00", aqi: 78, pm25: 22.8, o3: 62, no2: 35, temp: 20, humidity: 72 },
@@ -25,47 +27,115 @@ const ForecastChart = () => {
     { time: "48:00", aqi: 85, pm25: 24.9, o3: 65, no2: 36, temp: 22, humidity: 70 }
   ];
 
-  const getAQIColor = (aqi: number) => {
-    if (aqi <= 50) return "#22c55e"; // green
-    if (aqi <= 100) return "#f59e0b"; // yellow
-    if (aqi <= 150) return "#f97316"; // orange
-    return "#ef4444"; // red
+  const aqiCategories = forecastData.reduce((acc, data) => {
+    if (data.aqi <= 50) acc.good++;
+    else if (data.aqi <= 80) acc.moderate++;
+    else if (data.aqi <= 100) acc.moderateHigh++;
+    else if (data.aqi <= 150) acc.unhealthySensitive++;
+    else if (data.aqi <= 200) acc.unhealthy++;
+    else acc.veryUnhealthy++;
+    return acc;
+  }, { good: 0, moderate: 0, moderateHigh: 0, unhealthySensitive: 0, unhealthy: 0, veryUnhealthy: 0 });
+
+  const pieData = [
+    { 
+      name: "Good", 
+      value: aqiCategories.good, 
+      color: "#10b981",
+      range: "0-50",
+      description: "Air quality is satisfactory, and air pollution poses little or no risk.",
+      icon: CheckCircle,
+      healthImpact: "Suitable for all outdoor activities"
+    },
+    { 
+      name: "Moderate", 
+      value: aqiCategories.moderate, 
+      color: "#84cc16",
+      range: "51-80",
+      description: "Air quality is acceptable. However, there may be a risk for some people.",
+      icon: Info,
+      healthImpact: "Sensitive individuals should consider limiting prolonged outdoor exertion"
+    },
+    { 
+      name: "Moderate High", 
+      value: aqiCategories.moderateHigh, 
+      color: "#f59e0b",
+      range: "81-100",
+      description: "Members of sensitive groups may experience health effects.",
+      icon: Wind,
+      healthImpact: "Active children and adults with respiratory disease should limit prolonged outdoor exertion"
+    },
+    { 
+      name: "Unhealthy for Sensitive", 
+      value: aqiCategories.unhealthySensitive, 
+      color: "#f97316",
+      range: "101-150",
+      description: "Everyone may begin to experience health effects; sensitive groups more seriously affected.",
+      icon: AlertTriangle,
+      healthImpact: "Sensitive groups should avoid outdoor activities"
+    },
+    { 
+      name: "Unhealthy", 
+      value: aqiCategories.unhealthy, 
+      color: "#ef4444",
+      range: "151-200",
+      description: "Health alert: everyone may experience more serious health effects.",
+      icon: AlertTriangle,
+      healthImpact: "Everyone should avoid prolonged outdoor exertion"
+    },
+    { 
+      name: "Very Unhealthy", 
+      value: aqiCategories.veryUnhealthy, 
+      color: "#991b1b",
+      range: "200+",
+      description: "Health warnings of emergency conditions. The entire population is affected.",
+      icon: AlertTriangle,
+      healthImpact: "Everyone should avoid all outdoor activities"
+    }
+  ].filter(item => item.value > 0);
+
+  const renderActiveShape = (props: any) => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+    return (
+      <g>
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius + 10}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+        />
+      </g>
+    );
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const percentage = ((data.value / forecastData.length) * 100).toFixed(1);
+      const Icon = data.icon;
       return (
-        <div className="bg-background/95 backdrop-blur border rounded-lg p-3 shadow-lg">
-          <p className="font-semibold mb-2">{`Time: ${label}`}</p>
-          <div className="space-y-1 text-sm">
-            <p className="flex justify-between">
-              <span>AQI:</span>
-              <span className="font-semibold" style={{ color: getAQIColor(data.aqi) }}>
-                {data.aqi}
-              </span>
-            </p>
-            <p className="flex justify-between">
-              <span>PM2.5:</span>
-              <span>{data.pm25} μg/m³</span>
-            </p>
-            <p className="flex justify-between">
-              <span>O₃:</span>
-              <span>{data.o3} ppb</span>
-            </p>
-            <p className="flex justify-between">
-              <span>NO₂:</span>
-              <span>{data.no2} ppb</span>
-            </p>
-            <hr className="my-1" />
-            <p className="flex justify-between">
-              <span>Temp:</span>
-              <span>{data.temp}°C</span>
-            </p>
-            <p className="flex justify-between">
-              <span>Humidity:</span>
-              <span>{data.humidity}%</span>
-            </p>
+        <div className="bg-white/98 backdrop-blur-sm border-2 rounded-xl p-4 shadow-2xl max-w-xs" style={{ borderColor: data.color }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Icon className="h-5 w-5" style={{ color: data.color }} />
+            <p className="font-bold text-gray-800">{data.name}</p>
+            <Badge style={{ backgroundColor: data.color, color: 'white' }}>{data.range}</Badge>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="p-2 bg-gray-50 rounded">
+              <p className="font-semibold text-gray-700">Duration:</p>
+              <p className="text-gray-600">{data.value} hours ({percentage}%)</p>
+            </div>
+            <div className="p-2 bg-gray-50 rounded">
+              <p className="font-semibold text-gray-700">Description:</p>
+              <p className="text-gray-600 text-xs">{data.description}</p>
+            </div>
+            <div className="p-2 rounded" style={{ backgroundColor: `${data.color}15` }}>
+              <p className="font-semibold text-gray-700">Health Impact:</p>
+              <p className="text-gray-600 text-xs">{data.healthImpact}</p>
+            </div>
           </div>
         </div>
       );
@@ -76,123 +146,174 @@ const ForecastChart = () => {
   const currentTime = new Date();
   const peakAQI = Math.max(...forecastData.map(d => d.aqi));
   const peakTime = forecastData.find(d => d.aqi === peakAQI)?.time;
+  const minAQI = Math.min(...forecastData.map(d => d.aqi));
+  const avgAQI = Math.round(forecastData.reduce((sum, d) => sum + d.aqi, 0) / forecastData.length);
 
   return (
-    <section id="forecast" className="py-12 bg-background">
+    <section id="forecast" className="py-12 bg-gradient-to-b from-blue-50 via-purple-50 to-white">
+      <style>{`
+        .stat-card {
+          transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+        }
+      `}</style>
+      
       <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">48-Hour Air Quality Forecast</h2>
-          <p className="text-muted-foreground">Predicted AQI levels with hourly resolution</p>
+        <div className="text-center mb-10">
+          <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            48-Hour Air Quality Forecast
+          </h2>
+          <p className="text-gray-600 text-lg">Comprehensive AQI distribution and health impact analysis</p>
         </div>
 
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Forecast Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="stat-card border-orange-200 bg-gradient-to-br from-orange-50 to-white">
               <CardContent className="pt-6">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="h-5 w-5 text-orange-500" />
+                <div className="flex items-start space-x-3">
+                  <div className="p-3 bg-orange-100 rounded-full">
+                    <TrendingUp className="h-6 w-6 text-orange-600" />
+                  </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Peak AQI Expected</p>
-                    <p className="text-2xl font-bold text-orange-500">{peakAQI}</p>
-                    <p className="text-xs text-muted-foreground">at {peakTime}</p>
+                    <p className="text-xs text-gray-600 font-medium mb-1">Peak AQI</p>
+                    <p className="text-2xl font-bold text-orange-600">{peakAQI}</p>
+                    <p className="text-xs text-gray-500 mt-1">at {peakTime}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="stat-card border-green-200 bg-gradient-to-br from-green-50 to-white">
               <CardContent className="pt-6">
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-blue-500" />
+                <div className="flex items-start space-x-3">
+                  <div className="p-3 bg-green-100 rounded-full">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                  </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Best Air Quality</p>
-                    <p className="text-2xl font-bold text-green-500">
-                      {Math.min(...forecastData.map(d => d.aqi))}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Early morning hours</p>
+                    <p className="text-xs text-gray-600 font-medium mb-1">Best AQI</p>
+                    <p className="text-2xl font-bold text-green-600">{minAQI}</p>
+                    <p className="text-xs text-gray-500 mt-1">Morning hours</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="stat-card border-blue-200 bg-gradient-to-br from-blue-50 to-white">
               <CardContent className="pt-6">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5 text-purple-500" />
+                <div className="flex items-start space-x-3">
+                  <div className="p-3 bg-blue-100 rounded-full">
+                    <Wind className="h-6 w-6 text-blue-600" />
+                  </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Overall Trend</p>
-                    <Badge variant="secondary" className="text-orange-500 border-orange-500">
-                      Moderate to Unhealthy*
-                    </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">Variable conditions</p>
+                    <p className="text-xs text-gray-600 font-medium mb-1">Average AQI</p>
+                    <p className="text-2xl font-bold text-blue-600">{avgAQI}</p>
+                    <p className="text-xs text-gray-500 mt-1">48-hr period</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="stat-card border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+              <CardContent className="pt-6">
+                <div className="flex items-start space-x-3">
+                  <div className="p-3 bg-purple-100 rounded-full">
+                    <Calendar className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600 font-medium mb-1">Forecast Range</p>
+                    <p className="text-2xl font-bold text-purple-600">48h</p>
+                    <p className="text-xs text-gray-500 mt-1">Hourly data</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Forecast Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Air Quality Index Forecast</span>
-                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-0.5 bg-nasa-blue" />
-                    <span>AQI Level</span>
-                  </div>
-                  <span>Updated: {currentTime.toLocaleTimeString()}</span>
+          <Card className="border-2 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
+              <CardTitle className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <span className="text-2xl font-bold text-gray-800">AQI Distribution & Health Impact Analysis</span>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-xs">Updated: {currentTime.toLocaleTimeString()}</span>
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-96">
+            <CardContent className="pt-6">
+              <div className="h-[550px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={forecastData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="time" 
-                      stroke="hsl(var(--foreground))"
-                      fontSize={12}
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--foreground))"
-                      fontSize={12}
-                      domain={[0, 150]}
-                    />
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, value }) => `${name}: ${value}h`}
+                      outerRadius={180}
+                      innerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      animationDuration={1200}
+                      animationBegin={0}
+                      activeIndex={activeIndex !== null ? activeIndex : undefined}
+                      activeShape={renderActiveShape}
+                      onMouseEnter={(_, index) => setActiveIndex(index)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} stroke="#fff" strokeWidth={3} />
+                      ))}
+                    </Pie>
                     <Tooltip content={<CustomTooltip />} />
-                    
-                    {/* Reference lines for AQI thresholds */}
-                    <ReferenceLine y={50} stroke="#22c55e" strokeDasharray="2 2" strokeWidth={1} />
-                    <ReferenceLine y={100} stroke="#f59e0b" strokeDasharray="2 2" strokeWidth={1} />
-                    <ReferenceLine y={150} stroke="#f97316" strokeDasharray="2 2" strokeWidth={1} />
-                    
-                    <Line
-                      type="monotone"
-                      dataKey="aqi"
-                      stroke="hsl(var(--nasa-blue))"
-                      strokeWidth={3}
-                      dot={{ fill: "hsl(var(--nasa-blue))", strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, fill: "hsl(var(--nasa-blue))" }}
-                    />
-                  </LineChart>
+                  </PieChart>
                 </ResponsiveContainer>
               </div>
               
-              {/* Chart Legend */}
-              <div className="flex justify-center space-x-6 mt-4 text-xs text-muted-foreground">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-1 bg-green-500" />
-                  <span>Good (0-50)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-1 bg-yellow-500" />
-                  <span>Moderate (51-100)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-1 bg-orange-500" />
-                  <span>Unhealthy for Sensitive (101-150)</span>
+              <div className="mt-6 pt-6 border-t-2">
+                <h3 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                  <Info className="h-5 w-5 text-blue-600" />
+                  Detailed Air Quality Breakdown
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {pieData.map((item, index) => {
+                    const Icon = item.icon;
+                    const percentage = ((item.value / forecastData.length) * 100).toFixed(0);
+                    return (
+                      <div 
+                        key={index} 
+                        className="p-4 rounded-xl border-2 transition-all hover:shadow-lg cursor-pointer" 
+                        style={{ 
+                          borderColor: item.color, 
+                          backgroundColor: `${item.color}08` 
+                        }}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-5 w-5" style={{ color: item.color }} />
+                            <span className="font-bold text-gray-800">{item.name}</span>
+                          </div>
+                          <Badge style={{ backgroundColor: item.color, color: 'white' }} className="text-xs">
+                            {item.range}
+                          </Badge>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-end gap-2">
+                            <p className="text-3xl font-bold" style={{ color: item.color }}>{item.value}</p>
+                            <p className="text-sm text-gray-600 mb-1">hours ({percentage}%)</p>
+                          </div>
+                          <p className="text-xs text-gray-600 leading-relaxed">{item.description}</p>
+                          <div className="pt-2 mt-2 border-t" style={{ borderColor: item.color }}>
+                            <p className="text-xs font-semibold text-gray-700">Health Recommendation:</p>
+                            <p className="text-xs text-gray-600 mt-1">{item.healthImpact}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </CardContent>
