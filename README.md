@@ -15,7 +15,7 @@ A **scalable platform** to forecast **hyperlocal air quality** using multi-sourc
 
 ## Features
 
-- **Street-Level Forecasting:** 1 km × 1 km hyperlocal predictions  
+- **Street-Level Forecasting:** hyperlocal predictions  
 - **Data Fusion:** Combines satellite, ground, and meteorological data  
 - **Explainable ML Models:** Feature importance visualization and uncertainty estimation  
 - **Interactive Map:** Mapbox-powered interface showing real-time forecasts  
