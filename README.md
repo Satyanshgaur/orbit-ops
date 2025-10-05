@@ -1,73 +1,80 @@
-# Welcome to your Lovable project
+Air Quality Forecasting Platform
 
-## Project info
+⚠️ Note: For data preprocessing and ML workflows, switch to the Machine_learning branch. Key notebooks:
 
-**URL**: https://lovable.dev/projects/3848b8de-7970-4d36-9d94-6c8255702706
+data_preprocessing.ipynb – Preprocess NASA TEMPO and other environmental data
 
-## How can I edit this code?
+air_quality_model.ipynb – Main ML forecasting models
 
-There are several ways of editing your application.
+tempo_complete_download.ipynb – TEMPO satellite data download workflow
 
-**Use Lovable**
+Overview
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3848b8de-7970-4d36-9d94-6c8255702706) and start prompting.
+A scalable platform to forecast hyperlocal air quality using multi-source environmental data. The system combines satellite data (TEMPO), ground sensors (EPA, OpenAQ), and weather data (NOAA) to provide predictive, explainable, and personalized insights.
 
-Changes made via Lovable will be committed automatically to this repo.
+Features
 
-**Use your preferred IDE**
+Street-Level Forecasting – 1 km × 1 km hyperlocal predictions
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Data Fusion – Satellite, ground, and meteorological data integrated
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Explainable ML Models – Feature importance visualization and uncertainty estimation
 
-Follow these steps:
+Interactive Map – Mapbox-powered interface showing real-time forecasts
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Personalized Alerts – Threshold-based email notifications (MVP), scalable to SMS & push
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Getting Started
+Prerequisites
 
-# Step 3: Install the necessary dependencies.
-npm i
+Python 3.10+
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Docker (for containerized deployment)
+
+Node.js 18+ (for frontend)
+
+Installation
+
+Clone the repository:
+git clone https://github.com/<your-username>/<repo-name>.git
+cd <repo-name>
+
+Install Python dependencies:
+pip install -r requirements.txt
+
+Run backend API:
+cd src/api
+uvicorn main:app --reload
+
+Run frontend:
+cd app/frontend
+npm install
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+Usage
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Preprocess data (Machine_learning branch):
+jupyter notebook notebooks/data_preprocessing.ipynb
 
-**Use GitHub Codespaces**
+Train and test ML models:
+jupyter notebook notebooks/air_quality_model.ipynb
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Download TEMPO satellite data:
+jupyter notebook notebooks/tempo_complete_download.ipynb
 
-## What technologies are used for this project?
+Access web app at http://localhost:8080
 
-This project is built with:
+Future Work
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Deploy multi-city cloud version (GCP/AWS)
 
-## How can I deploy this project?
+Integrate LSTM & Graph Neural Networks for spatio-temporal modeling
 
-Simply open [Lovable](https://lovable.dev/projects/3848b8de-7970-4d36-9d94-6c8255702706) and click on Share -> Publish.
+Expand multi-channel notifications: SMS, push, email
 
-## Can I connect a custom domain to my Lovable project?
+Real-time data ingestion and alert system
 
-Yes, you can!
+License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+MIT License
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
